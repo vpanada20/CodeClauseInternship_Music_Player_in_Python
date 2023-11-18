@@ -1,0 +1,53 @@
+import tkinter as tk
+from tkinter import filedialog
+import pygame
+
+# Initialize Pygame mixer
+pygame.mixer.init()
+
+class MusicPlayer:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Music Player")
+        self.root.geometry("400x200")
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        # Playlist
+        self.playlist = tk.Listbox(self.root, selectmode=tk.SINGLE, bg="lightgray", selectbackground="gray")
+        self.playlist.pack(pady=10)
+
+        # Buttons
+        tk.Button(self.root, text="Load Music", command=self.load_music).pack(pady=5)
+        tk.Button(self.root, text="Play", command=self.play_music).pack(pady=5)
+        tk.Button(self.root, text="Pause", command=self.pause_music).pack(pady=5)
+        tk.Button(self.root, text="Resume", command=self.resume_music).pack(pady=5)
+
+        # Playlist paths list
+        self.playlist_paths = []
+
+    def load_music(self):
+        file_path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.mp3;*.wav")])
+        if file_path:
+            self.playlist.insert(tk.END, file_path)
+            self.playlist_paths.append(file_path)
+
+    def play_music(self):
+        current_selection = self.playlist.curselection()
+        if current_selection:
+            current_index = current_selection[0]
+            current_music = self.playlist_paths[current_index]
+            pygame.mixer.music.load(current_music)
+            pygame.mixer.music.play(loops=0)
+
+    def pause_music(self):
+        pygame.mixer.music.pause()
+
+    def resume_music(self):
+        pygame.mixer.music.unpause()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MusicPlayer(root)
+    root.mainloop()
